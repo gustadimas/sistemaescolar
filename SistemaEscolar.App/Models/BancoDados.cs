@@ -1,4 +1,4 @@
-using SistemaEscolar.App.Enums;
+﻿using SistemaEscolar.App.Enums;
 
 namespace SistemaEscolar.App.Models;
 
