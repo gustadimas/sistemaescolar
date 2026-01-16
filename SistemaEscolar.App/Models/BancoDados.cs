@@ -17,41 +17,61 @@ public static class BancoDados
         }
     };
 
-    public static List<Aluno> ObterLista()
+    public static List<Aluno> Listar()
     {
-        return _alunos.ToList();
+        return _alunos
+            .OrderByDescending(aluno => aluno.DataCadastro)
+            .ToList();
     }
 
-    public static Aluno? ObterPorId(ulong id)
+    public static Aluno? Listar(ulong id)
     {
         return _alunos.FirstOrDefault(aluno => aluno.Id == id);
     }
 
     public static void Adicionar(Aluno aluno)
     {
-        var ultimoId = _alunos.Count == 0 ? 0UL : _alunos.Max(item => item.Id);
+        try
+        {
+            var ultimoId = _alunos.Count == 0 ? 0UL : _alunos.Max(item => item.Id);
 
-        aluno.Id = ultimoId + 1;
-        aluno.DataCadastro = DateTime.Now;
-        aluno.DataAtualizacao = null;
+            aluno.Id = ultimoId + 1;
+            aluno.DataCadastro = DateTime.Now;
+            aluno.DataAtualizacao = null;
 
-        _alunos.Add(aluno);
+            _alunos.Add(aluno);
+        }
+        catch (Exception ex)
+        {
+            throw new Exception(
+                "Ocorreu um erro não tratado. Por favor, contate o time de sistemas!",
+                ex);
+        }
     }
 
     public static bool Atualizar(Aluno alunoAtualizado)
     {
-        var aluno = _alunos.FirstOrDefault(item => item.Id == alunoAtualizado.Id);
-        if (aluno is null)
+        try
         {
-            return false;
+            var aluno = _alunos.FirstOrDefault(item => item.Id == alunoAtualizado.Id);
+            if (aluno is null)
+            {
+                return false;
+            }
+
+            aluno.Nome = alunoAtualizado.Nome;
+            aluno.Idade = alunoAtualizado.Idade;
+            aluno.Escolaridade = alunoAtualizado.Escolaridade;
+            aluno.DataAtualizacao = DateTime.Now;
+
+            return true;
         }
-
-        aluno.Nome = alunoAtualizado.Nome;
-        aluno.Idade = alunoAtualizado.Idade;
-        aluno.Escolaridade = alunoAtualizado.Escolaridade;
-        aluno.DataAtualizacao = DateTime.Now;
-
-        return true;
+        catch (Exception ex)
+        {
+            throw new Exception(
+                "Ocorreu um erro não tratado. Por favor, contate o time de sistemas!",
+                ex);
+        }
     }
 
     public static bool Remover(ulong id)
