@@ -1,32 +1,35 @@
 ﻿using SistemaEscolar.App.Enums;
 using SistemaEscolar.App.Models;
 
+const string MensagemOpcaoInvalida = "Opção Inválida";
+const string MensagemAlunoNaoEncontrado = "Não foi encontrado um aluno com o ID informado.";
+
 bool sair = false;
 
 while (!sair)
 {
-    ExibirMenu();
+    MostrarMenuPrincipal();
     var opcao = Console.ReadLine();
 
     switch (opcao)
     {
         case "1":
-            MenuListar();
+            ExecutarListagem();
             break;
         case "2":
-            MenuCadastrar();
+            ExecutarCadastro();
             break;
         case "3":
-            MenuEditar();
+            ExecutarEdicao();
             break;
         case "4":
-            MenuRemover();
+            ExecutarRemocao();
             break;
         case "0":
             sair = true;
             break;
         default:
-            Console.WriteLine("Opção Inválida");
+            Console.WriteLine(MensagemOpcaoInvalida);
             break;
     }
 
@@ -36,7 +39,7 @@ while (!sair)
     }
 }
 
-static void ExibirMenu()
+static void MostrarMenuPrincipal()
 {
     Console.WriteLine("-Sistema Escolar-");
     Console.WriteLine("1 - Listar alunos");
@@ -47,7 +50,7 @@ static void ExibirMenu()
     Console.Write("Escolha uma opção: ");
 }
 
-static void MenuListar()
+static void ExecutarListagem()
 {
     Console.WriteLine("1 - Listar todos");
     Console.WriteLine("2 - Listar por ID");
@@ -60,7 +63,7 @@ static void MenuListar()
         var aluno = BancoDados.Listar(id);
         if (aluno is null)
         {
-            Console.WriteLine("Não foi encontrado um aluno com o ID informado.");
+            Console.WriteLine(MensagemAlunoNaoEncontrado);
             return;
         }
 
@@ -70,7 +73,7 @@ static void MenuListar()
 
     if (escolha != "1")
     {
-        Console.WriteLine("Opção Inválida");
+        Console.WriteLine(MensagemOpcaoInvalida);
         return;
     }
 
@@ -88,9 +91,9 @@ static void MenuListar()
     }
 }
 
-static void MenuCadastrar()
+static void ExecutarCadastro()
 {
-    var nome = LerTexto("Nome: ");
+    var nome = LerTextoObrigatorio("Nome: ");
     var idade = LerUint("Idade: ");
     var escolaridade = LerEscolaridade();
 
@@ -112,10 +115,10 @@ static void MenuCadastrar()
     }
 }
 
-static void MenuEditar()
+static void ExecutarEdicao()
 {
     var id = LerUlong("Informe o ID do aluno: ");
-    var nome = LerTexto("Nome: ");
+    var nome = LerTextoObrigatorio("Nome: ");
     var idade = LerUint("Idade: ");
     var escolaridade = LerEscolaridade();
 
@@ -132,7 +135,7 @@ static void MenuEditar()
         var atualizado = BancoDados.Atualizar(aluno);
         Console.WriteLine(atualizado
             ? "Aluno atualizado com sucesso!"
-            : "Não foi encontrado um aluno com o ID informado.");
+            : MensagemAlunoNaoEncontrado);
     }
     catch (Exception ex)
     {
@@ -140,17 +143,17 @@ static void MenuEditar()
     }
 }
 
-static void MenuRemover()
+static void ExecutarRemocao()
 {
     var id = LerUlong("Informe o ID do aluno: ");
     var removido = BancoDados.Remover(id);
 
     Console.WriteLine(removido
         ? "Aluno removido com sucesso!"
-        : "Não foi encontrado um aluno com o ID informado.");
+        : MensagemAlunoNaoEncontrado);
 }
 
-static string LerTexto(string rotulo)
+static string LerTextoObrigatorio(string rotulo)
 {
     while (true)
     {
@@ -207,15 +210,12 @@ static Escolaridade LerEscolaridade()
         Console.Write("Escolha uma opção: ");
 
         var texto = Console.ReadLine();
-        if (int.TryParse(texto, out var opcao))
+        if (int.TryParse(texto, out var opcao) && opcao >= 1 && opcao <= 4)
         {
-            if (opcao >= 1 && opcao <= 4)
-            {
-                return (Escolaridade)(opcao - 1);
-            }
+            return (Escolaridade)(opcao - 1);
         }
 
-        Console.WriteLine("Opção Inválida");
+        Console.WriteLine(MensagemOpcaoInvalida);
     }
 }
 
